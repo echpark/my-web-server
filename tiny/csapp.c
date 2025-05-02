@@ -541,9 +541,10 @@ void Fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 }
 
 
-/**************************** 
- * Sockets interface wrappers
- ****************************/
+/*
+ * 소켓 인터페이스:
+ * 네트워크 프로그램을 만들기 위한 Unix I/O 함수들과 함께 사용되는 함수들의 집합
+ */
 
 int Socket(int domain, int type, int protocol) 
 {
@@ -947,6 +948,10 @@ ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
  *       -1 with errno set for other errors.
  */
 /* $begin open_clientfd */
+
+/*
+ * open_clientfd - 서버와의 연결을 설정하는 도움함수
+ */
 int open_clientfd(char *hostname, char *port) {
     int clientfd, rc;
     struct addrinfo hints, *listp, *p;
