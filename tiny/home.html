@@ -1,7 +1,43 @@
-<html>
-<head><title>test</title></head>
-<body> 
-<img align="middle" src="godzilla.gif">
-Dave O'Hallaron
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+
+<body>
+    <div>
+        <h1>1. this is godzilla</h1>
+        <img src="godzilla.gif">
+        <h3>godzilla: hi everyone</h3>
+    </div>
+
+    <hr>
+    
+    <div>
+        <h1>2. this is adder robot</h1>
+        <div style="width: 300px; background-color: rgb(255, 209, 241);">
+            <h3 style="padding: 10px 0 0 10px">how to use?</h3>
+            <p style="padding: 0 0 10px 10px">add num1 + add num2 = result !</p>
+        </div>
+
+        <form action="/cgi-bin/adder" method="GET">
+            <p>add num1: <input type="text" name="num1" placeholder="write your first number"><br></p>
+            <p>add num2: <input type="text" name="num2" placeholder="write your second number"></p>
+            <input type="submit" value="check result">
+        </form>
+    </div>
+
+    <hr>
+
+    <div>
+        <h1>3. this is video</h1>
+        <video width="480" controls>
+            <source src="test.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
 </body>
+
 </html>

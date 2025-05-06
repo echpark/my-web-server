@@ -154,31 +154,53 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
 }
 
 /* 
- * 정적 파일의 내용을 클라이언트에게 전송
- * 다시 보기
+ * 정적 파일의 내용을 클라이언트에게 전송 - malloc 사용
+ * malloc()으로 메모리를 할당하고 read()로 직접 읽어서 전송하는 방식
  */
 void serve_static(int fd, char *filename, int filesize)
 {
   int srcfd;
-  char *srcp, filetype[MAXLINE], buf[MAXBUF];
-  char header[MAXBUF];
+  char *srcbuf; // 파일 내용을 저장할 메모리 공간
+  char filetype[MAXLINE], header[MAXBUF];
+  rio_t rio;
 
+  // MIME 타입 설정
   get_filetype(filename, filetype);
+
+  // 응답 헤더 작성
   sprintf(header, "HTTP/1.0 200 OK\r\n");
   sprintf(header + strlen(header), "Server: Tiny Web Server\r\n");
   sprintf(header + strlen(header), "Connection: close\r\n");
   sprintf(header + strlen(header), "Content-length: %d\r\n", filesize);
   sprintf(header + strlen(header), "Content-type: %s\r\n\r\n", filetype);
+
+  // 헤더 전송
   Rio_writen(fd, header, strlen(header));
+  printf("Response headers:\n%s", header);
 
-  printf("Response headers:\n");
-  printf("%s", buf);
-
+  // 파일 열고 버퍼 준비
   srcfd = Open(filename, O_RDONLY, 0);
-  srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
+  srcbuf = (char *)malloc(filesize);
+
+  if (!srcbuf) {
+    fprintf(stderr, "malloc failed\n");
+    Close(srcfd);
+    return;
+  }
+  
+  // 파일을 읽어서 버퍼에 저장
+  Rio_readinitb(&rio, srcfd);
+  if (Rio_readn(srcfd, srcbuf, filesize) != filesize) {
+    fprintf(stderr, "Rio_readn failed\n");
+    free(srcbuf);
+    Close(srcfd);
+    return;
+  }
   Close(srcfd);
-  Rio_writen(fd, srcp, filesize);
-  Munmap(srcp, filesize);
+
+  // 버퍼 내용을 클라이언트로 전송
+  Rio_writen(fd, srcbuf, filesize);
+  free(srcbuf);  // 메모리 해제
 }
 
 /* 
@@ -214,6 +236,10 @@ void get_filetype(char *filename, char *filetype)
     strcpy(filetype, "image/gif");
   } else if (strstr(filename, ".jpg")) {
     strcpy(filetype, "image/jpeg");
+  } else if (strstr(filename, ".mpg")) {  // 11.7 숙제
+    strcpy(filetype, "video/mpeg");
+  } else if (strstr(filename, ".mp4")) {  // test용
+    strcpy(filetype, "video/mp4");
   } else {
     strcpy(filetype, "text/plain");
   }
