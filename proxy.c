@@ -55,7 +55,7 @@ void *thread(void *vargp) {
 
 /* 
  * 클라이언트가 보낸 HTTP 요청을 읽고,
- * 파싱해서 다시 전송
+ * 파싱해서 다시 전송 
  */
 void func(int connfd)
 { 
